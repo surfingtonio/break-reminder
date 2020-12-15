@@ -1,60 +1,72 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
     <v-main>
-      <HelloWorld/>
+      <break-reminder v-if="remind" :message="message" :timeout="timeout - elapsed" :paused="paused" @onpause="handlePause" @oncontinue="handleContinue" @onskip="handleSkip" />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import BreakReminder from './components/BreakReminder';
 
 export default {
   name: 'App',
-
   components: {
-    HelloWorld,
+    BreakReminder
   },
+  data() {
+    return {
+      ticker: null,
+      elapsed: 0,
+      timeout: 15,
+      activityLength: 5,
+      remind: false,
+      paused: false,
+      message: 'Time to take a break'
+    }
+  },
+  mounted() {
+    this.ticker = this.startTimer();
+  },
+  methods: {
+    startTimer() {
+      this.paused = false;
+      return setInterval(() => {
+        this.elapsed++;
 
-  data: () => ({
-    //
-  }),
-};
+        if(!this.remind && this.elapsed === this.activityLength)
+          this.show();
+
+        if(this.remind && this.elapsed === this.timeout)
+          this.hide()
+
+      }, 1000);
+    },
+    handleSkip() {
+      this.hide();
+    },
+    handlePause() {
+      clearInterval(this.ticker);
+      this.paused = true;
+    },
+    handleContinue() {
+      this.ticker = this.startTimer();
+    },
+    show() {
+      this.elapsed = 0;
+      this.remind = true;
+    },
+    hide() {
+      this.elapsed = 0;
+      this.remind = false;
+    }
+  }
+}
 </script>
+
+<style>
+      #app {
+        font-family: Roboto;
+        color: #333
+      }
+</style>
