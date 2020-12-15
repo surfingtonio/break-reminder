@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="pt-4">
       <break-reminder v-if="remind" :message="message" :timeout="timeout - elapsed" :paused="paused" @onpause="handlePause" @oncontinue="handleContinue" @onskip="handleSkip" />
     </v-main>
   </v-app>
@@ -8,6 +8,7 @@
 
 <script>
 import BreakReminder from './components/BreakReminder';
+const { ipcRenderer } = require('electron');
 
 export default {
   name: 'App',
@@ -18,8 +19,8 @@ export default {
     return {
       ticker: null,
       elapsed: 0,
-      timeout: 15,
-      activityLength: 5,
+      timeout: 20,
+      activityLength: 600,
       remind: false,
       paused: false,
       message: 'Time to take a break'
@@ -55,18 +56,13 @@ export default {
     show() {
       this.elapsed = 0;
       this.remind = true;
+      ipcRenderer.send('onshow');
     },
     hide() {
       this.elapsed = 0;
       this.remind = false;
+      ipcRenderer.send('onhide');
     }
   }
 }
 </script>
-
-<style>
-      #app {
-        font-family: Roboto;
-        color: #333
-      }
-</style>
