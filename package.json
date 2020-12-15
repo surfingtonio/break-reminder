@@ -1,5 +1,10 @@
 {
   "name": "break-reminder",
+  "author": {
+    "name": "Marc Danting",
+    "email": "marc@danting.ca",
+    "url": "https://github.com/surfingtonio/break-reminder"
+  },
   "version": "0.1.0",
   "private": true,
   "scripts": {
